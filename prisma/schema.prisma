@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  PLAYER
+  MASTER
+}
+
+enum AbilityType {
+  PASSIVE
+  ACTIVE
+  RISK
+}
+
+model User {
+  id         String      @id @default(cuid())
+  name       String
+  email      String      @unique
+  password   String
+  role       UserRole
+  characters Character[]
+  campaigns  Campaign[]
+}
+
+model Campaign {
+  id         String      @id @default(cuid())
+  name       String
+  createdBy  String
+  creator    User        @relation(fields: [createdBy], references: [id])
+  characters Character[]
+}
+
+model Character {
+  id         String    @id @default(cuid())
+  name       String
+  userId     String?
+  campaignId String?
+  user       User?     @relation(fields: [userId], references: [id])
+  campaign   Campaign? @relation(fields: [campaignId], references: [id])
+
+  forca     Int
+  agilidade Int
+  intelecto Int
+  presenca  Int
+  vontade   Int
+
+  vidaAtual Int
+  eterAtual Int
+  corrupcao Int
+
+  combate           Int
+  atletismo         Int
+  intimidacaoFisica Int
+  mira              Int
+  furtividade       Int
+  reflexos          Int
+  investigacao      Int
+  manutencao        Int
+  conhecimento      Int
+  persuasao         Int
+  enganacao         Int
+  intimidacaoVerbal Int
+  resistencia       Int
+  determinacao      Int
+  intuicao          Int
+
+  specialAbilities SpecialAbility[]
+  notes            Note[]
+}
+
+model SpecialAbility {
+  id          String    @id @default(cuid())
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id])
+
+  name        String
+  description String
+  type        AbilityType
+  eterCost    Int
+  corrCost    Int
+}
+
+model Note {
+  id          String    @id @default(cuid())
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id])
+  content     String
+  createdAt   DateTime  @default(now())
+}
