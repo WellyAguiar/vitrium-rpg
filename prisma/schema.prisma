@@ -6,25 +6,14 @@ datasource db {
   provider = "postgresql"
 }
 
-enum UserRole {
-  PLAYER
-  MASTER
-}
-
-enum AbilityType {
-  PASSIVE
-  ACTIVE
-  RISK
-}
-
 model User {
   id         String      @id @default(cuid())
   name       String
   email      String      @unique
   password   String
   role       UserRole
-  characters Character[]
   campaigns  Campaign[]
+  characters Character[]
 }
 
 model Campaign {
@@ -36,23 +25,18 @@ model Campaign {
 }
 
 model Character {
-  id         String    @id @default(cuid())
-  name       String
-  userId     String?
-  campaignId String?
-  user       User?     @relation(fields: [userId], references: [id])
-  campaign   Campaign? @relation(fields: [campaignId], references: [id])
-
-  forca     Int
-  agilidade Int
-  intelecto Int
-  presenca  Int
-  vontade   Int
-
-  vidaAtual Int
-  eterAtual Int
-  corrupcao Int
-
+  id                String           @id @default(cuid())
+  name              String
+  userId            String?
+  campaignId        String?
+  forca             Int
+  agilidade         Int
+  intelecto         Int
+  presenca          Int
+  vontade           Int
+  vidaAtual         Int
+  eterAtual         Int
+  corrupcao         Int
   combate           Int
   atletismo         Int
   intimidacaoFisica Int
@@ -68,27 +52,38 @@ model Character {
   resistencia       Int
   determinacao      Int
   intuicao          Int
-
-  specialAbilities SpecialAbility[]
-  notes            Note[]
+  campaign          Campaign?        @relation(fields: [campaignId], references: [id])
+  user              User?            @relation(fields: [userId], references: [id])
+  notes             Note[]
+  specialAbilities  SpecialAbility[]
 }
 
 model SpecialAbility {
-  id          String    @id @default(cuid())
+  id          String      @id @default(cuid())
   characterId String
-  character   Character @relation(fields: [characterId], references: [id])
-
   name        String
   description String
   type        AbilityType
   eterCost    Int
   corrCost    Int
+  character   Character   @relation(fields: [characterId], references: [id])
 }
 
 model Note {
   id          String    @id @default(cuid())
   characterId String
-  character   Character @relation(fields: [characterId], references: [id])
   content     String
   createdAt   DateTime  @default(now())
+  character   Character @relation(fields: [characterId], references: [id])
+}
+
+enum UserRole {
+  PLAYER
+  MASTER
+}
+
+enum AbilityType {
+  PASSIVE
+  ACTIVE
+  RISK
 }
